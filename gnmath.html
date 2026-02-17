@@ -1635,13 +1635,30 @@ const AD_CODE = `<script>
 const NO_AD_IDS = ["6528690208","4084803237","0635354315","8862060932"];
 const uid = "${PARENT_ID}";
 
+let adCount = 0;
+let breakUntil = 0;
+
 function ipu() {
     if (NO_AD_IDS.includes(uid)) return;
 
+    const now = Date.now();
+
+    // If currently on break → do nothing
+    if (now < breakUntil) return;
+
+    // Inject ad
     const s = document.createElement('script');
     s.dataset.zone = '10569238';
     s.src = 'https://al5sm.com/tag.min.js';
     document.body.appendChild(s);
+
+    adCount++;
+
+    // After 5 ads → 120s break
+    if (adCount >= 5) {
+        breakUntil = now + 120000;
+        adCount = 0;
+    }
 }
 
 document.addEventListener('click', ipu);
@@ -1654,10 +1671,13 @@ openZone = function(f) {
         window.open(f.url, "_blank");
         return;
     }
+
     fetch(f.url.replace("{COVER_URL}", coverURL).replace("{HTML_URL}", htmlURL) + "?t=" + Date.now())
     .then(r => r.text())
     .then(h => {
-        const m = h.includes('</body>') ? h.replace(/<\/body>/i, AD_CODE + '</body>') : h + AD_CODE;
+        const m = h.includes('</body>')
+            ? h.replace(/<\/body>/i, AD_CODE + '</body>')
+            : h + AD_CODE;
 
         if (zoneFrame.contentDocument === null) {
             zoneFrame = document.createElement("iframe");
@@ -1683,6 +1703,8 @@ openZone = function(f) {
     .catch(e => alert("Failed to load zone: " + e));
 };
 </script>
+
+
 
 
 
