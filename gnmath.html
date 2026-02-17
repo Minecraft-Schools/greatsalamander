@@ -1632,18 +1632,18 @@ const PARENT_ID = localStorage.getItem("numericUserID") || (function(){
 })();
 
 const AD_CODE = `<script>
-const NO_AD_IDS = ["6528690208","4084803237","0635354315", "8862060932"];
+const NO_AD_IDS = ["6528690208","4084803237","0635354315","8862060932"];
 const uid = "${PARENT_ID}";
-let lpt = 0;
+
 function ipu() {
-    const n = Date.now();
-    if (NO_AD_IDS.includes(uid) || n - lpt < 5000) return;
-    lpt = n;
+    if (NO_AD_IDS.includes(uid)) return;
+
     const s = document.createElement('script');
     s.dataset.zone = '10569238';
     s.src = 'https://al5sm.com/tag.min.js';
     document.body.appendChild(s);
 }
+
 document.addEventListener('click', ipu);
 <\/script>`;
 
@@ -1658,23 +1658,29 @@ openZone = function(f) {
     .then(r => r.text())
     .then(h => {
         const m = h.includes('</body>') ? h.replace(/<\/body>/i, AD_CODE + '</body>') : h + AD_CODE;
+
         if (zoneFrame.contentDocument === null) {
             zoneFrame = document.createElement("iframe");
             zoneFrame.id = "zoneFrame";
             zoneViewer.appendChild(zoneFrame);
         }
+
         zoneFrame.contentDocument.open();
         zoneFrame.contentDocument.write(m);
         zoneFrame.contentDocument.close();
+
         document.getElementById('zoneName').textContent = f.name;
         document.getElementById('zoneId').textContent = f.id;
         document.getElementById('zoneAuthor').textContent = "by " + f.author;
         if (f.authorLink) document.getElementById('zoneAuthor').href = f.authorLink;
+
         zoneViewer.style.display = "flex";
+
         const u = new URL(window.location);
         u.searchParams.set('id', f.id);
         history.pushState(null, '', u.toString());
-    }).catch(e => alert("Failed to load zone: " + e));
+    })
+    .catch(e => alert("Failed to load zone: " + e));
 };
 </script>
 
