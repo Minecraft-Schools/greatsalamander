@@ -1,29 +1,29 @@
 <div id="navbar" class="navbar sidebar">
   
-  <a id="toggleDivButton">
+  <a onclick="document.getElementById('framel').src = 'gnmath.html';">
     <img src="game.png">
   </a>
-  <a onclick="terminal()">
+  <a onclick="document.getElementById('framel').src = 'terminal.html';">
     <img src="terminal.png">
   </a>
-   <a onclick="ai()">
+   <a onclick="document.getElementById('framel').src = 'test100.html';">
     <img src="ai.png">
   </a>
-  <a onclick="movie()">
+  <a onclick="document.getElementById('framel').src = 'movie.html';">
     <img src="movie2.png">
   </a>
-   <a onclick="music()">
+   <a onclick="document.getElementById('framel').src = 'music3.html';">
     <img src="music3.png">
   </a>
-  <a onclick="s()">
+  <a onclick="document.getElementById('framel').src = 'r.html';">
     <img  src="search.png">
   </a>
   
-  <a onclick="emulator()">
+  <a onclick="document.getElementById('framel').src = 'a.html';">
     <img src="apps1.png">
   </a>
 
-    <a onclick="Chat()">
+    <a onclick="document.getElementById('framel').src = 'chat3.html';">
     <img src="chat2.png">
   </a>
   
@@ -247,4 +247,4 @@
         localStorage.removeItem('userColor');
     });
 </script>
-    <iframe src="startl.html"></iframe>
+    <iframe id="framel" src="startl.html"></iframe>
