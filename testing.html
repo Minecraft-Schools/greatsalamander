@@ -84,7 +84,7 @@ color: white;
       flex-direction: row;
       align-items: center;
       gap: 12px;
-      padding: 0 10px;
+      padding: 0 5px;
       backdrop-filter: blur(2px) saturate(140%);
        box-shadow: 
     0 12px 28px rgba(0,0,0,0.45),
@@ -807,6 +807,15 @@ border: 1px solid rgba(255, 255, 255, 0.15);
             <a href="https://demonzero.space" target="_blank">
      <img class="btn" src="demon.png">
           </a>
+
+             <a href="https://classroomspot.b-cdn.net" target="_blank">
+     <img class="btn" src="cs.png">
+          </a>
+
+          <a href="https://sites.google.com/view/thesolarsystem67/home" target="_blank">
+     <img class="btn" src="jupiter.gif">
+          </a>
+     
      
         
        
@@ -817,20 +826,21 @@ border: 1px solid rgba(255, 255, 255, 0.15);
 <div id="updateDiv">
   <button class="close-btn" onclick="document.getElementById('updateDiv').style.display = 'none';">●</button>
   <h1 class="gtext"> Updates</h1>
-<h1 style="text-align: center;">Version 3 (Beta)</h1>
-        <h3 style="text-align: center; color:white;">New update: draggable/resizable windows, icons, weather widget, new prxy, new apps, more customizations, and more</h3>
+<h1 style="text-align: center;">Version 3.12 (Beta)</h1>
+        <h3 style="text-align: center; color:white;">New update: Removed annoying ads for yall.</h3>
                 <h3 style="text-align: center; color:white;">ALL VERCEL LINKS ARE DOWN, MAKE YOUR OWN HERE</h3>
                   <a style="background-color: rgb(0, 0, 0); padding:10px 20px; color:rgb(255, 255, 255); border-radius: 10px; text-align: center; font-family: sans-serif; text-decoration: none; " href="https://vercel.com/new/clone?repository-url=https://github.com/t9lat22/t9lat22.github.io
 "  target="_blank">make Vercel links</a>
   <a style="background-color: rgb(255, 255, 255); padding:10px 20px; color:rgb(0, 0, 0); border-radius: 10px; text-align: center; font-family: sans-serif; text-decoration: none; " href="https://app.netlify.com/start/deploy?repository=https%3A%2F%2Fgithub.com%2Ft9lat22%2Ft9lat22.github.io"  target="_blank">make Netlify links</a>
+    <a style="background-color: rgb(0, 0, 0); padding:10px 20px; color:rgb(255, 255, 255); border-radius: 10px; text-align: center; font-family: sans-serif; text-decoration: none; " href="https://forms.gle/BSTZQSijox8Dm2nL8"  target="_blank">Give feedback</a>
 
 
 
-  <a style="background-color: white; padding:10px 20px; color:black; border-radius: 10px; text-align: center; font-family: sans-serif; text-decoration: none; " href="https://docs.google.com/document/d/1mR-52jkUgqwVoEXaIC1CmPccFzuLK18fQ-jCn9VkZn0/edit?usp=sharing"  target="_blank">Current links</a>
 
 
 
-        <h3 style="text-align: center; color:white;">Make sure to join our discord server for updates and sneak peeks!</h3>
+
+        <h3 style="text-align: center; color:white;">Join the Discord for sneak peaks and more!</h3>
 
 
         <h3 style="text-align: center; color:white;">If you would like to help out T9 OS please donate to our Ko-Fi. Thank you!</h3>
@@ -864,7 +874,11 @@ border: 1px solid rgba(255, 255, 255, 0.15);
             "I barely make any money off T9 OS so donations will be appreciated.",
             "Am I the only one that watches SML?",
             "I think you should join the disc@rd server",
-            "btw t9os.vercel.app is stuck in V2.5 "
+            "btw t9os.vercel.app is stuck in V2.5 ",
+            "What feature should I add next?",
+            "Fun fact: I ran out of fun facts",
+            ""
+
 
         ];
         document.getElementById("random-text").textContent = texts[Math.floor(Math.random() * texts.length)];
@@ -1241,6 +1255,42 @@ loadWidgetWeather();
   
  <h1 style="text-align: center;">welcome to my secret corner</h1>
  <h2 style="text-align: center;">btw how did u find my secret corner?</h2>
+<h3 style="text-align: center;" id="count">0 people online</h2>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, onDisconnect, set }
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "chat2-a86b2.firebaseapp.com",
+  databaseURL: "https://chat2-a86b2-default-rtdb.firebaseio.com",
+  projectId: "chat2-a86b2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const connectionsRef = ref(db, "connections");
+const connectedRef = ref(db, ".info/connected");
+
+onValue(connectedRef, (snap) => {
+  if (snap.val()) {
+    const myConnection = push(connectionsRef);
+    set(myConnection, true);
+    onDisconnect(myConnection).remove();
+  }
+});
+
+onValue(connectionsRef, (snapshot) => {
+  const data = snapshot.val();
+  const count = data ? Object.keys(data).length : 0;
+  document.getElementById("count").innerText =
+    count + " people online";
+});
+</script>
+
 
 <img style="width:75px; height:50px;" src="cat.gif">
 <img style="width:100px; height:75px;" src="please.png">
@@ -1497,6 +1547,7 @@ transform: translateX(-50%);
 <button class="close-btn" onclick="document.getElementById('hiddenDiv').style.display = 'none';">●</button>
     <button class="full-btn" onclick="fullscreenIframe()">●</button>
 
+  <button class="back" style="top:7px; left: 50px; position: fixed; color:white;"    onclick="document.getElementById('frame2').src = 'gnmath.html';">←</button>
 <h3 style="  left: 50%; color:white; top:-9.5px; position: absolute;   transform: translateX(-50%);      " >Games</h3>
 <h3  id="fpsCounter" style="  left: 80%; color:white; top:-9.5px; position: absolute;   transform: translateX(-80%);      " ></h3>
 
@@ -1515,7 +1566,7 @@ transform: translateX(-50%);
       border-radius:0px 0px 12px 12px;
       left:0;
       border-top: 1px solid rgb(37, 37, 37);
-      background-image: url("space2.png");
+      background-image:url("space2.png");
     }
     .back {
     background: none;
@@ -2483,10 +2534,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 </script>
 
- <div id="imgBox">
 
-
- </div>
 
   <!-- Firebase SDK -->
   <script type="module">
@@ -2645,7 +2693,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
   // ========== CONFIG ==========
-  const OWNER_IDS = ["6528690208", "4084803237", "0635354315"]; // add both owner IDs here
+  const OWNER_IDS = ["6528690208", "4084803237", "0635354315", "8862060932"]; // add both owner IDs here
   const ID_KEY = "numericUserID";
   // ============================
 
@@ -3208,8 +3256,6 @@ window.addEventListener("blur",stopAll);
     g.async=true; g.src='https://cdn.matomo.cloud/t9osspace.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
   })();
 </script>
-
-
 <!-- End Matomo Code -->
 
 
