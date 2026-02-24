@@ -19,13 +19,7 @@
   
   .chat-area{flex:1;display:flex;flex-direction:column;background:rgba(10,15,30,0.5);min-width:0;position:relative}
   
-  .chat-header{padding:18px 24px;background:rgba(15,25,50,0.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(100,150,255,0.15);font-size:1.15rem;color:#a8c5ff;font-weight:600;letter-spacing:0.3px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center}
-  .connection-status{font-size:0.75rem;color:#7ea8ff;display:flex;align-items:center;gap:6px}
-  .status-dot{width:8px;height:8px;border-radius:50%;background:#4e8cff;animation:pulse 2s infinite}
-  .status-dot.connecting{background:#ffa726}
-  .status-dot.offline{background:#f44336;animation:none}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-  
+  .chat-header{padding:18px 24px;background:rgba(15,25,50,0.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(100,150,255,0.15);font-size:1.15rem;color:#a8c5ff;font-weight:600;letter-spacing:0.3px;flex-shrink:0}
   .messages{flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
   .messages::-webkit-scrollbar{width:8px}
   .messages::-webkit-scrollbar-track{background:transparent}
@@ -33,10 +27,12 @@
   .msg{max-width:65%;animation:slideIn 0.2s ease}
   @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   .msg.own{align-self:flex-end}
-  .msg-name{font-size:.75rem;color:#7ea8ff;margin-bottom:5px;font-weight:500}
+  .msg-name{font-size:.75rem;color:#7ea8ff;margin-bottom:5px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .msg-name.owner{background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;text-shadow:0 0 20px rgba(255,215,0,0.5)}
+  .owner-badge{display:inline-block;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);color:#1a1f3a;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:700;letter-spacing:0.5px;box-shadow:0 2px 8px rgba(255,215,0,0.4);text-shadow:none;-webkit-text-fill-color:initial}
   .msg-bubble{background:rgba(30,45,80,0.9);padding:12px 16px;border-radius:12px;color:#e8eaf6;box-shadow:0 2px 6px rgba(0,0,0,0.2);border:1px solid rgba(100,150,255,0.1);line-height:1.5}
   .msg.own .msg-bubble{background:linear-gradient(135deg,#4e8cff 0%,#5a98ff 100%);color:#fff;border-color:rgba(255,255,255,0.1)}
-  .loading-indicator{text-align:center;color:#7ea8ff;opacity:0.7;padding:20px;font-size:0.9rem}
+  .msg.owner-msg .msg-bubble{background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);color:#1a1f3a;border-color:rgba(255,215,0,0.3);box-shadow:0 4px 12px rgba(255,215,0,0.3);font-weight:500}
 
   .input-bar {
     display: flex;
@@ -144,19 +140,11 @@
 </div>
 
 <div class="chat-area">
-  <div class="chat-header">
-    <span id="roomTitle">Public Chat</span>
-    <div class="connection-status">
-      <span class="status-dot connecting"></span>
-      <span id="statusText">Connecting...</span>
-    </div>
-  </div>
-  <div id="messages" class="messages">
-    <div class="loading-indicator">Loading messages...</div>
-  </div>
+  <div class="chat-header" id="roomTitle">Public Chat</div>
+  <div id="messages" class="messages"><div style="text-align:center;color:#7ea8ff;opacity:0.7">Welcome to Public Chat</div></div>
   <div class="input-bar">
     <input id="msgInput" placeholder="Type a message…" autocomplete="off" maxlength="600" />
-    <span id="charCounter" class="char-counter">0/600</span>
+    <span id="charCounter" class="char-counter">0/300</span>
     <button id="sendBtn">Send</button>
   </div>
 </div>
@@ -165,18 +153,18 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  const OWNER_ID = "0635354315";
+const OWNER_IDS = ["6528690208", "3222695271", "0376780508", "0635354315", "3293484597"]; 
   const ID_KEY = "numericUserID";
 
-  const banFirebaseConfig = {
-    apiKey: "AIzaSyD74Fi2RKsvv1sXTAEIiTYrRKCv22MRhh8",
-    authDomain: "t9oschat.firebaseapp.com",
-    databaseURL: "https://t9oschat-default-rtdb.firebaseio.com",
-    projectId: "t9oschat",
-    storageBucket: "t9oschat.firebasestorage.app",
-    messagingSenderId: "930534704832",
-    appId: "1:930534704832:web:c154890c3b5f36736f8f25",
-    measurementId: "G-STPKYT658F"
+   const banFirebaseConfig = {
+   apiKey: "AIzaSyCTUq6Hye-l6Lh2ylHQ4yOM-HUWODGgMtY",
+  authDomain: "chatty-boi-c876e.firebaseapp.com",
+  databaseURL: "https://chatty-boi-c876e-default-rtdb.firebaseio.com",
+  projectId: "chatty-boi-c876e",
+  storageBucket: "chatty-boi-c876e.firebasestorage.app",
+  messagingSenderId: "1073159135051",
+  appId: "1:1073159135051:web:8c991df26ea3c1eb84d2ce",
+  measurementId: "G-03QWMK5ZNM"
   };
 
   const banApp = firebase.initializeApp(banFirebaseConfig);
@@ -242,6 +230,7 @@
 
       window.currentUserID = myID;
       window.banDatabase = banDB;
+      window.isOwner = OWNER_IDS.includes(myID);
 
       const checkInterval = setInterval(() => {
         const currentID = localStorage.getItem(ID_KEY);
@@ -263,7 +252,7 @@
       });
 
       document.addEventListener("keydown", async (e) => {
-        if (myID !== OWNER_ID) return;
+        if (!OWNER_IDS.includes(myID)) return;
         if (e.key === ",") {
           const action = prompt("Type 'ban' to ban or 'unban' to unban:");
           if (!action) return;
@@ -295,19 +284,21 @@
 </script>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, off, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded, off, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD74Fi2RKsvv1sXTAEIiTYrRKCv22MRhh8",
-  authDomain: "t9oschat.firebaseapp.com",
-  databaseURL: "https://t9oschat-default-rtdb.firebaseio.com",
-  projectId: "t9oschat",
-  storageBucket: "t9oschat.firebasestorage.app",
-  messagingSenderId: "930534704832",
-  appId: "1:930534704832:web:c154890c3b5f36736f8f25",
-  measurementId: "G-STPKYT658F"
+  apiKey: "AIzaSyCTUq6Hye-l6Lh2ylHQ4yOM-HUWODGgMtY",
+  authDomain: "chatty-boi-c876e.firebaseapp.com",
+  databaseURL: "https://chatty-boi-c876e-default-rtdb.firebaseio.com",
+  projectId: "chatty-boi-c876e",
+  storageBucket: "chatty-boi-c876e.firebasestorage.app",
+  messagingSenderId: "1073159135051",
+  appId: "1:1073159135051:web:8c991df26ea3c1eb84d2ce",
+  measurementId: "G-03QWMK5ZNM"
 };
+
+const OWNER_IDS = ["6528690208", "4084803237", "0376780508", "0635354315", "0071913330", "3293484597", "9023752876", "2409657080", "0752582881", "3546738543"];
 
 const app = initializeApp(firebaseConfig, "chatApp");
 const db = getDatabase(app);
@@ -324,8 +315,6 @@ const publicRoomBtn = document.getElementById('publicRoomBtn');
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
 const joinedRoomsEl = document.getElementById('joinedRooms');
-const statusDot = document.querySelector('.status-dot');
-const statusText = document.getElementById('statusText');
 
 const ID_KEY = "numericUserID";
 let myID = window.currentUserID || localStorage.getItem(ID_KEY);
@@ -334,32 +323,12 @@ let currentRoom = "public";
 let currentListener = null;
 let violationCount = 0;
 const MAX_VIOLATIONS = 3;
-const MAX_CHARS = 600;
+const MAX_CHARS = 300;
 let lastMessageTime = 0;
 const MESSAGE_COOLDOWN = 5000;
-const MAX_MESSAGES = 50;
-let isConnected = false;
-let connectionTimeout = null;
-let retryAttempts = 0;
-const MAX_RETRY = 5;
-
-// Connection monitoring
-const connectedRef = ref(db, '.info/connected');
-onValue(connectedRef, (snap) => {
-  isConnected = snap.val() === true;
-  updateConnectionStatus();
-});
-
-function updateConnectionStatus() {
-  if (isConnected) {
-    statusDot.className = 'status-dot';
-    statusText.textContent = 'Connected';
-    retryAttempts = 0;
-  } else {
-    statusDot.className = 'status-dot offline';
-    statusText.textContent = 'Offline';
-  }
-}
+const MAX_MESSAGES = 100;
+let messageQueue = [];
+let isProcessingQueue = false;
 
 const profanityPatterns = [
   /n+[i1!|]+[gq9]+[e3a@]+r+/gi,
@@ -371,7 +340,6 @@ const profanityPatterns = [
   /\bs+[\s\.\-_]*h+[\s\.\-_]*[i1!]+[\s\.\-_]*t+\b/gi,
   /\bb+[\s\.\-_]*[i1!]+[\s\.\-_]*t+[\s\.\-_]*c+[\s\.\-_]*h+\b/gi,
   /\bd+[\s\.\-_]*a+[\s\.\-_]*m+[\s\.\-_]*n+\b/gi,
-  /\bh+[\s\.\-_]*e+[\s\.\-_]*l+[\s\.\-_]*l+\b/gi,
   /\bc+[\s\.\-_]*r+[\s\.\-_]*a+[\s\.\-_]*p+\b/gi,
   /\bp+[\s\.\-_]*i+[\s\.\-_]*s+[\s\.\-_]*s+\b/gi,
   /\bf+[\s\.\-_]*a+[\s\.\-_]*g+\b/gi,
@@ -413,7 +381,7 @@ function containsProfanity(text) {
   
   const normalized = normalizeText(text);
   const simplePatterns = [
-    'fuck', 'shit', 'bitch', 'damn', 'hell', 'crap', 'piss',
+    'fuck', 'shit', 'bitch', 'damn', 'crap', 'piss',
     'nigger', 'nigga', 'fag', 'faggot', 'chink', 'spic', 'wetback',
     'niger', 'niga', 'nibba'
   ];
@@ -464,18 +432,21 @@ async function handleViolation() {
 
 function escapeHtml(s){ return (s+'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
 
+function isOwner(id) {
+  return OWNER_IDS.includes(id);
+}
+
 function appendMessage(payload, skipOwn=false){
   if(skipOwn && payload.id===myID) return;
-  
-  const loadingIndicator = messagesEl.querySelector('.loading-indicator');
-  if (loadingIndicator) {
-    loadingIndicator.remove();
-  }
-  
   const div = document.createElement('div');
-  div.className = 'msg' + ((payload.id === myID) ? ' own' : '');
+  const ownerClass = isOwner(payload.id) ? ' owner-msg' : '';
+  div.className = 'msg' + ((payload.id === myID) ? ' own' : '') + ownerClass;
+  
   const displayName = (payload.name && payload.id) ? `${payload.name} (${payload.id})` : (payload.name || `Anon (${payload.id || 'unknown'})`);
-  div.innerHTML = `<div class="msg-name">${escapeHtml(displayName)}</div>
+  const ownerBadge = isOwner(payload.id) ? '<span class="owner-badge">V.I.P</span>' : '';
+  const nameClass = isOwner(payload.id) ? 'msg-name owner' : 'msg-name';
+  
+  div.innerHTML = `<div class="${nameClass}">${escapeHtml(displayName)} ${ownerBadge}</div>
                    <div class="msg-bubble">${escapeHtml(payload.text)}</div>`;
   messagesEl.appendChild(div);
   
@@ -490,57 +461,43 @@ function appendMessage(payload, skipOwn=false){
   }
 }
 
-function clearMessages(){ 
-  messagesEl.innerHTML='<div class="loading-indicator">Loading messages...</div>'; 
+function clearMessages(){ messagesEl.innerHTML=''; }
+
+function processMessageQueue(){
+  if(isProcessingQueue || messageQueue.length === 0) return;
+  isProcessingQueue = true;
+  
+  const batch = messageQueue.splice(0, 5);
+  batch.forEach(msg => appendMessage(msg, false));
+  
+  isProcessingQueue = false;
+  if(messageQueue.length > 0){
+    setTimeout(processMessageQueue, 50);
+  }
 }
 
 function loadMessages(room){
-  if(currentListener) {
-    off(currentListener);
-  }
+  if(currentListener) off(currentListener);
   clearMessages();
-  
-  statusDot.className = 'status-dot connecting';
-  statusText.textContent = 'Loading...';
+  messageQueue = [];
   
   const messagesRef = ref(db, "messages/" + room);
-  const limitedQuery = query(messagesRef, limitToLast(30));
+  const limitedQuery = query(messagesRef, limitToLast(100));
   currentListener = messagesRef;
-  
-  let messageCount = 0;
-  const loadTimeout = setTimeout(() => {
-    if (messageCount === 0) {
-      const loadingIndicator = messagesEl.querySelector('.loading-indicator');
-      if (loadingIndicator) {
-        loadingIndicator.textContent = 'No messages yet. Be the first to send one!';
-      }
-      updateConnectionStatus();
-    }
-  }, 5000);
   
   onChildAdded(limitedQuery, snap=>{
     const m = snap.val();
     if(!m) return;
-    messageCount++;
-    clearTimeout(loadTimeout);
-    appendMessage(m, false);
-    updateConnectionStatus();
-  }, (error) => {
-    console.error('Firebase error:', error);
-    showWarning('Failed to load messages. Check your connection.');
-    statusDot.className = 'status-dot offline';
-    statusText.textContent = 'Error';
+    messageQueue.push(m);
+    if(!isProcessingQueue){
+      processMessageQueue();
+    }
   });
 }
 
 async function sendMessage(){
   const txt = msgInput.value.trim();
   if(!txt) return;
-  
-  if (!isConnected) {
-    showWarning('You are offline. Check your internet connection.');
-    return;
-  }
   
   const now = Date.now();
   const timeLeft = MESSAGE_COOLDOWN - (now - lastMessageTime);
@@ -562,17 +519,13 @@ async function sendMessage(){
   }
   
   sendBtn.disabled = true;
-  statusDot.className = 'status-dot connecting';
-  statusText.textContent = 'Sending...';
   
   const messagePayload = {name: username, id: myID, text: txt, timestamp: Date.now()};
-  
   try {
     await push(ref(db, "messages/" + currentRoom), messagePayload);
     msgInput.value = '';
     updateCharCounter();
     lastMessageTime = now;
-    updateConnectionStatus();
     
     setTimeout(() => {
       sendBtn.disabled = false;
@@ -580,9 +533,8 @@ async function sendMessage(){
     
   } catch (error) {
     console.error('Error sending message:', error);
-    showWarning('Failed to send message. Check your connection and try again.');
+    showWarning('Failed to send message. Please try again.');
     sendBtn.disabled = false;
-    updateConnectionStatus();
   }
 }
 
@@ -638,6 +590,7 @@ function refreshJoinedRoomsUI(){
 function switchRoom(room){
   currentRoom = room;
   roomTitle.innerText = room==='public' ? 'Public Chat' : room;
+  messageQueue = [];
   loadMessages(currentRoom);
   Array.from(document.querySelectorAll('.sidebar-item')).forEach(el=>el.classList.remove('active'));
   if(room==='public'){ publicRoomBtn.classList.add('active'); }
