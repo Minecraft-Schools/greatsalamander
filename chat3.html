@@ -90,11 +90,10 @@
   <div id="messages" class="messages"><div style="text-align:center;color:#7ea8ff;opacity:0.7">Welcome to Public Chat</div></div>
   <div class="input-bar">
     <div class="input-row">
-      <input id="msgInput" placeholder="Type a message… or !ai <prompt>" autocomplete="off" maxlength="600" />
+      <input id="msgInput" placeholder="Type a message…" autocomplete="off" maxlength="300" />
       <span id="charCounter" class="char-counter">0/300</span>
       <button id="sendBtn">Send</button>
     </div>
-    <div class="ai-hint">✨ Type <strong>!ai</strong> &lt;prompt&gt; to ask the AI</div>
   </div>
 </div>
 
@@ -205,7 +204,6 @@ const firebaseConfig = {
 
 const OWNER_IDS = ["6528690208", "4084803237", "0376780508", "0635354315", "0071913330", "3293484597", "9023752876", "2409657080", "0752582881", "3546738543"];
 
-// ↓ Replace this with your new Groq worker URL after deploying ai-worker.js
 const AI_API = "https://soft-wind-7f84.t9osta.workers.dev/";
 
 const app = initializeApp(firebaseConfig, "chatApp");
