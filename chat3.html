@@ -100,7 +100,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-const OWNER_IDS = ["6528690208", "3222695271", "0376780508", "0635354315", "3293484597"]; 
+const OWNER_IDS = ["6528690208", "3222695271", "0376780508", "0635354315", "3293484597", "9937301888"]; 
 const ID_KEY = "numericUserID";
 const banFirebaseConfig = {
   apiKey: "AIzaSyCTUq6Hye-l6Lh2ylHQ4yOM-HUWODGgMtY",
@@ -311,7 +311,7 @@ function appendMessage(payload, skipOwn=false) {
   const ownerClass = isOwner(payload.id) ? ' owner-msg' : '';
   div.className = 'msg' + ((payload.id === myID) ? ' own' : '') + ownerClass;
   const displayName = (payload.name && payload.id) ? `${payload.name} (${payload.id})` : (payload.name || `Anon (${payload.id || 'unknown'})`);
-  const ownerBadge = isOwner(payload.id) ? '<span class="owner-badge">V.I.P</span>' : '';
+  const ownerBadge = isOwner(payload.id) ? '<span class="owner-badge">Premium</span>' : '';
   const nameClass = isOwner(payload.id) ? 'msg-name owner' : 'msg-name';
   div.innerHTML = `<div class="${nameClass}">${escapeHtml(displayName)} ${ownerBadge}</div>
                    <div class="msg-bubble">${escapeHtml(payload.text)}</div>`;
