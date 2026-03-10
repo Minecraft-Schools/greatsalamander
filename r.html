@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>T9 Browserr</title>
 
-<script src="/uv/uv.bundle.js"></script>
-<script src="/uv/uv.config.js"></script>
-<script src="/baremux/index.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
@@ -162,12 +158,11 @@ html, body {
     pointer-events: none;
 }
 body{
-      background-repeat: no-repeat;
-  background-size: cover;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  text-decoration: none;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
 }
 </style>
 </head>
@@ -197,15 +192,6 @@ body{
 </div>
 
 <script>
-// Check if we're on t9os.space to determine proxy mode
-const isT9OS = location.hostname === "t9os.com" || location.hostname === "www.t9os.com";
-const USE_CODETABS_PROXY = isT9OS;
-
-navigator.serviceWorker?.register("/uv/sw.js")
-
-const connection = new BareMux.BareMuxConnection("/baremux/worker.js")
-connection.setTransport("/epoxy/index.mjs", [{ wisp: "wss://webmath.help/wisp/" }])
-
 const tabsEl = document.getElementById("tabs")
 const newTabBtn = document.getElementById("newtab")
 const urlInput = document.getElementById("url")
@@ -221,25 +207,20 @@ function createTab(url = "") {
     const iframe = document.createElement("iframe")
     iframe.className = "viewframe"
     iframe.dataset.id = id
-
-    iframe.setAttribute("sandbox",
-        "allow-scripts allow-same-origin allow-forms allow-modals allow-popups"
-    )
-
+    // Secure sandbox: only scripts, forms, modals, popups
+    iframe.setAttribute("sandbox", "allow-scripts allow-forms allow-modals allow-popups")
     document.body.appendChild(iframe)
 
     const tabBtn = document.createElement("div")
     tabBtn.className = "tab"
     tabBtn.dataset.id = id
     tabBtn.innerHTML = `<span>New Tab</span><i class="fas fa-xmark"></i>`
-
     tabBtn.addEventListener("click", e => {
         if (e.target.tagName === "I") closeTab(id)
         else activateTab(id)
     })
 
     tabsEl.insertBefore(tabBtn, newTabBtn)
-
     tabs.push({ id, iframe, tabBtn, history: [], index: -1 })
     activateTab(id)
 
@@ -248,15 +229,12 @@ function createTab(url = "") {
 
 function activateTab(id) {
     activeId = id
-
     tabs.forEach(t => {
         t.iframe.classList.toggle("active", t.id === id)
         t.tabBtn.classList.toggle("active", t.id === id)
     })
-
     const tab = getTab()
     if (!tab) return
-
     if (tab.index >= 0) {
         urlInput.value = tab.history[tab.index]
         ntp.style.display = "none"
@@ -268,14 +246,11 @@ function activateTab(id) {
 
 function closeTab(id) {
     if (tabs.length === 1) return
-
     const i = tabs.findIndex(t => t.id === id)
     const tab = tabs[i]
-
     tab.iframe.remove()
     tab.tabBtn.remove()
     tabs.splice(i, 1)
-
     activateTab(tabs[Math.max(0, i - 1)].id)
 }
 
@@ -290,66 +265,42 @@ function normalize(input) {
 async function navigate(input, push = true) {
     const tab = getTab()
     if (!tab) return
-
     const url = normalize(input)
-
     if (push) {
         tab.history = tab.history.slice(0, tab.index + 1)
         tab.history.push(url)
         tab.index++
     }
 
-    if (USE_CODETABS_PROXY) {
-        // Use CodeTabs proxy with srcdoc rendering
-        try {
-            const res = await fetch(
-                "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(url)
-            )
-            
-            const html = await res.text()
-            
-            // Parse HTML
-            const parser = new DOMParser()
-            const doc = parser.parseFromString(html, "text/html")
-            
-            // Fix relative links by adding base tag
-            const base = doc.createElement("base")
-            base.href = url
-            doc.head.prepend(base)
-            
-            // Inject proxy script to handle navigation clicks
-            const script = doc.createElement("script")
-            script.textContent = `
-                // Intercept all link clicks to route through proxy
-                document.addEventListener('click', function(e) {
-                    const link = e.target.closest('a');
-                    if (link && link.href) {
-                        e.preventDefault();
-                        window.parent.postMessage({type: 'navigate', url: link.href}, '*');
-                    }
-                });
-                // Update parent with current URL
-                window.parent.postMessage({type: 'title', title: document.title}, '*');
-            `
-            doc.head.appendChild(script)
-            
-            // Render page using srcdoc
-            tab.iframe.srcdoc = doc.documentElement.outerHTML
-            tab.iframe.dataset.currentUrl = url
-            
-        } catch (err) {
-            tab.iframe.srcdoc = "<h1 style='color:red;text-align:center;margin-top:50px;'>Failed to load page</h1><p style='text-align:center;'>" + err.message + "</p>"
-        }
-    } else {
-        // Use normal UV proxy
-        tab.iframe.removeAttribute('srcdoc')
-        tab.iframe.src = __uv$config.prefix + __uv$config.encodeUrl(url)
+    try {
+        // CodeTabs proxy for static hosting
+        const res = await fetch("https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(url))
+        const html = await res.text()
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(html, "text/html")
+        const base = doc.createElement("base")
+        base.href = url
+        doc.head.prepend(base)
+        const script = doc.createElement("script")
+        script.textContent = `
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.href) {
+                    e.preventDefault();
+                    window.parent.postMessage({type:'navigate',url:link.href}, '*');
+                }
+            });
+            window.parent.postMessage({type:'title',title:document.title}, '*');
+        `
+        doc.head.appendChild(script)
+        tab.iframe.srcdoc = doc.documentElement.outerHTML
+        tab.iframe.dataset.currentUrl = url
+    } catch (err) {
+        tab.iframe.srcdoc = "<h1 style='color:red;text-align:center;margin-top:50px;'>Failed to load page</h1><p style='text-align:center;'>" + err.message + "</p>"
     }
-    
+
     urlInput.value = url
     ntp.style.display = "none"
-
-    // Update tab title
     tab.tabBtn.querySelector("span").textContent = new URL(url).hostname
 }
 
@@ -357,73 +308,54 @@ function getTab() {
     return tabs.find(t => t.id === activeId)
 }
 
-// Listen for messages from iframe (for CodeTabs proxy navigation)
-window.addEventListener('message', (e) => {
-    if (e.data && e.data.type === 'navigate' && e.data.url) {
-        navigate(e.data.url)
-    } else if (e.data && e.data.type === 'title' && e.data.title) {
+// Messages from iframe (proxy navigation)
+window.addEventListener('message', e => {
+    if (e.data?.type === 'navigate' && e.data.url) navigate(e.data.url)
+    else if (e.data?.type === 'title' && e.data.title) {
         const tab = getTab()
-        if (tab) {
-            tab.tabBtn.querySelector("span").textContent = e.data.title
-        }
+        if (tab) tab.tabBtn.querySelector("span").textContent = e.data.title
     }
 })
 
-/* ===== CONTROLS ===== */
-back.onclick = () => {
+// Controls
+document.getElementById("back").onclick = () => {
     const t = getTab()
     if (!t || t.index <= 0) return
     t.index--
     navigate(t.history[t.index], false)
 }
-
-forward.onclick = () => {
+document.getElementById("forward").onclick = () => {
     const t = getTab()
     if (!t || t.index >= t.history.length - 1) return
     t.index++
     navigate(t.history[t.index], false)
 }
-
-reload.onclick = () => {
+document.getElementById("reload").onclick = () => {
     const t = getTab()
     if (!t) return
-    
-    if (USE_CODETABS_PROXY && t.iframe.dataset.currentUrl) {
-        // Reload using stored URL
-        navigate(t.iframe.dataset.currentUrl, false)
-    } else {
-        t.iframe.src = t.iframe.src
-    }
+    if (t.iframe.dataset.currentUrl) navigate(t.iframe.dataset.currentUrl, false)
+    else t.iframe.src = t.iframe.src
 }
-
-popout.onclick = () => {
+document.getElementById("popout").onclick = () => {
     const t = getTab()
     if (!t) return
-    
-    if (USE_CODETABS_PROXY && t.iframe.dataset.currentUrl) {
-        window.open(t.iframe.dataset.currentUrl, "_blank")
-    } else {
-        window.open(t.iframe.src, "_blank")
-    }
+    if (t.iframe.dataset.currentUrl) window.open(t.iframe.dataset.currentUrl, "_blank")
+    else window.open(t.iframe.src, "_blank")
 }
-
-form.onsubmit = e => {
+document.getElementById("form").onsubmit = e => {
     e.preventDefault()
     if (urlInput.value.trim()) navigate(urlInput.value)
 }
-
 newTabBtn.onclick = () => createTab()
 
+// Start with one tab
 createTab()
 </script>
-
-
 
 <script>
 window.addEventListener('beforeunload', function (e) {
     e.preventDefault();
     e.returnValue = '';
-    return '';
 });
 </script>
 
